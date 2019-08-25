@@ -1,3 +1,16 @@
 - hosts: localhost
   roles:
   - unimatrix-k8s-auth
+  tasks:
+  - name: lookup all namespaces
+    register: result
+    k8s_facts:
+      kubeconfig: "{{ k8s_kubeconfig }}"
+      kind: Namespace
+
+  - name: display information about namespaces
+    with_items: "{{ result.resources }}"
+    loop_control:
+      loop_var: ns
+    debug:
+      msg: "{{ ns.metadata.name }}"
